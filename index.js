@@ -19,4 +19,4 @@ http.createServer(function (req, res) {
 
   }
 
-}).listen(4001, 'lomis.ehealth.org.ng');
+}).listen(4001, '127.0.0.1');
