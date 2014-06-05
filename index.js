@@ -3,6 +3,7 @@ var request = require("request");
 
 http.createServer(function (req, res) {
 
+  res.writeHead(200, {'Content-Type': 'text/plain'});
   if (req.method === 'POST') {
     var body = '';
     req.on('data', function (data) {
@@ -14,9 +15,13 @@ http.createServer(function (req, res) {
         "json": JSON.parse(body),
         "method": "POST"
       });
-      res.end('reply to request: sms sent to server. \n');//this is the reply to the request.
+      res.end('reply to request: sms sent to server. \n');//reply sent to client/could be sms to be resen
     });
 
+  }else{
+    req.on('end', function () {
+      res.end('request received successfully. \n');//this is the reply to the client
+    });
   }
 
 }).listen(4001, '127.0.0.1');
