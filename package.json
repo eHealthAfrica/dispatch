@@ -1,0 +1,43 @@
+{
+  "name": "dispatch",
+  "version": "0.0.0",
+  "description": "LoMIS Messaging Framework",
+  "keywords": ["LoMIS"," messaging"," dipatcher"," sms"," email"],
+  "author": "eHealthAfrica",
+  "contributors": [],
+  "license": "N/A",
+  "homepage": "https://github.com/eHealthAfrica/dispatch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eHealthAfrica/dispatch.git"
+  },
+  "bugs": {
+    "url": "https://github.com/eHealthAfrica/dispatch/issues"
+  },
+  "main": "index.js",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md",
+    "index.js",
+    "lib",
+    "bin"
+  ],
+  "scripts": {
+    "prepublish": "grunt build",
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-jshint": "~0.8.0",
+    "grunt-mocha-test": "~0.8.1",
+    "mocha-multi": "~0.3.0",
+    "mocha-slow-reporter": "0.0.0",
+    "chai": "~1.8.1",
+    "rimraf": "~2.2.5",
+    "mocha-unfunk-reporter": "~0.4.0",
+    "istanbul": "~0.2.3"
+  },
+  "peerDependencies": {},
+  "dependencies": {}
+}

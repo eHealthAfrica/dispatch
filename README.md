@@ -1,4 +1,3 @@
-dispatch
-========
+# dispatch
 
-LoMIS messaging framework
+LoMIS Messaging Framework
