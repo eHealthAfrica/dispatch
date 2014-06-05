@@ -10,15 +10,17 @@ http.createServer(function (req, res) {
       body += data;
     });
     req.on('end', function () {
-      request({
-        "uri": "http://dev.lomis.ehealth.org.ng:5984/offline_sms_alerts/",
-        "json": JSON.parse(body),
-        "method": "POST"
-      });
+      if (body.length > 0) {
+        request({
+          "uri": "http://dev.lomis.ehealth.org.ng:5984/offline_sms_alerts/",
+          "json": JSON.parse(body),
+          "method": "POST"
+        });
+      }
       res.end('reply to request: sms sent to server. \n');//reply sent to client/could be sms to be resen
     });
 
-  }else{
+  } else {
     req.on('end', function () {
       res.end('request received successfully. \n');//this is the reply to the client
     });
