@@ -4,8 +4,8 @@ var request = require("request");
 http.createServer(function (req, res) {
 
   res.writeHead(200, {'Content-Type': 'text/plain'});
+  var body = '';
   if (req.method === 'POST') {
-    var body = '';
     req.on('data', function (data) {
       body += data;
     });
@@ -21,6 +21,9 @@ http.createServer(function (req, res) {
     });
 
   } else {
+    req.on('data', function (data) {
+      body += data;
+    });
     req.on('end', function () {
       res.end('request received successfully. \n');//this is the reply to the client
     });
