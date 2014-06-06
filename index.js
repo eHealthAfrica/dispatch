@@ -13,14 +13,14 @@ http.createServer(function (req, res) {
     });
     //process complete request
     req.on('end', function () {
-      console.log()
+      console.log();
       if (requestMsgBody.length > 0) {
         //parse POST message body to json
         var decodedMsg = querystring.parse(requestMsgBody);
         console.log(decodedMsg);
         request({
           "uri": "http://dev.lomis.ehealth.org.ng:5984/offline_sms_alerts/",
-          "json": decodedMsg['content'],
+          "json": decodedMsg.content,
           "method": "POST"
         });
       }
