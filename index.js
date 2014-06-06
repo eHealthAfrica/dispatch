@@ -4,20 +4,23 @@ var request = require('request');
 
 http.createServer(function (req, res) {
 
-  res.writeHead(200, {'Content-Type': 'text/plain'});
   var requestMsgBody = '';
   if (req.method === 'POST') {
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    //aggregate post body
     req.on('data', function (data) {
       requestMsgBody += data;
     });
+    //process complete request
     req.on('end', function () {
+      console.log()
       if (requestMsgBody.length > 0) {
         //parse POST message body to json
         var decodedMsg = querystring.parse(requestMsgBody);
-
+        console.log(decodedMsg);
         request({
           "uri": "http://dev.lomis.ehealth.org.ng:5984/offline_sms_alerts/",
-          "json": decodedMsg,
+          "json": decodedMsg['content'],
           "method": "POST"
         });
       }
@@ -25,11 +28,12 @@ http.createServer(function (req, res) {
     });
 
   } else {
+    res.writeHead(405, {});
     req.on('data', function (data) {
       requestMsgBody += data;
     });
     req.on('end', function () {
-      res.end('request received, send POST request to send sms to server. \n');//this is the reply to the client
+      res.end();
     });
   }
 
