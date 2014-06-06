@@ -17,11 +17,17 @@ http.createServer(function (req, res) {
       if (requestMsgBody.length > 0) {
         //parse POST message body to json
         var decodedMsg = querystring.parse(requestMsgBody);
-        console.log(decodedMsg);
+        console.log(decodedMsg.content);
         request({
           "uri": "http://dev.lomis.ehealth.org.ng:5984/offline_sms_alerts/",
-          "json": decodedMsg.content,
+          "json": JSON.parse(decodedMsg.content),
           "method": "POST"
+        }, function(err, res, body)
+        {
+          if(err !== null)
+            console.log(err);
+          //console.log(res);
+          console.log(body);
         });
       }
       res.end('reply to request: sms sent to server. \n');//reply sent to client/could be sms to be resen
