@@ -36,7 +36,8 @@
     "chai": "~1.8.1",
     "rimraf": "~2.2.5",
     "mocha-unfunk-reporter": "~0.4.0",
-    "istanbul": "~0.2.3"
+    "istanbul": "~0.2.3",
+    "request": "~2.36.1"
   },
   "peerDependencies": {},
   "dependencies": {}
