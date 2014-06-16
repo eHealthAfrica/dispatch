@@ -19,7 +19,7 @@ var isComplete = function (alert) {
 
   switch (alert.db) {
     case storage.STOCK_OUT:
-      return (typeof alert.productType !== 'undefined');
+      return (typeof alert.productType !== 'undefined' && typeof alert.stockLevel !== 'undefined');
     case storage.CCU_BREAKDOWN:
       return (typeof alert.dhis2_modelid !== 'undefined');
     default:
