@@ -3,24 +3,34 @@ var storage = require("./storage.js");
 
 this.generateMsg = function(alert){
   var msg = '';
-  var facilityName = [alert.facility.name, 'HF'].join(' ');
+  var facilityName = alert.facility.name;
+  var facilityWard = alert.facility.ward;
+  var contactPhoneNo = alert.facility.contact.oldphone;
+
+  console.log(alert.facility);
   switch (alert.db) {
     case storage.STOCK_OUT:
       msg = [
-        'There is low',
+        'Stock out(',
         alert.productType.code,
-        ' product type at' ,
+        '):' ,
+        facilityWard,
+        ',',
         facilityName,
-        ', current level:',
-        alert.stockLevel
+        ',',
+        contactPhoneNo
       ].join(' ');
       break;
     case storage.CCU_BREAKDOWN:
       msg = [
-        'There is ccu model:',
+        'CCU breakdown(',
         alert.dhis2_modelid,
-        'breakdown at ',
-        facilityName
+        '):',
+        facilityWard,
+        ',',
+        facilityName,
+        ',',
+        contactPhoneNo
       ].join(' ');
       break;
     default:

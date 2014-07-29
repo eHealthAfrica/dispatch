@@ -92,5 +92,5 @@ this.createOrUpdate = function(dbName, record){
   return deferred.promise;
 };
 
-//expose report as a module.
+//expose storage as a module.
 module.storage = this;

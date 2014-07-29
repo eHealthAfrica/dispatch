@@ -13,7 +13,7 @@ var isValid = function (msg) {
 
 
 var isComplete = function (alert) {
-  if (typeof alert.db === 'undefined' || typeof alert.uuid === 'undefined' || typeof alert.facility === 'undefined') {
+  if (typeof alert.db === 'undefined' || typeof alert.uuid === 'undefined' || typeof alert.facility === 'undefined' || typeof alert.created === 'undefined') {
     return false;
   }
 
