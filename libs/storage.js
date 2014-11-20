@@ -9,6 +9,7 @@ this.CCU_PROFILE = "ccei";
 this.CONTACTS = "contacts";
 this.STOCK_OUT = "stock_out";
 this.CCU_BREAKDOWN = "ccu_breakdown";
+this.STOCK_COUNT = "stockcount";
 this.OFFLINE_SMS_ALERTS = "offline_sms_alerts";
 
 this.getRecord = function(dbName, uuid){
@@ -52,13 +53,19 @@ this.createOrUpdate = function(dbName, record){
     if (res) {
       var couchResponse = JSON.parse(res.body);
       if (!couchResponse.error) {
-        //update couchResponse document with record properties
-        var recordProperties = Object.keys(record);
-        for (var index in recordProperties) {
-          var key = recordProperties[index];
-          couchResponse[key] = record[key];
+        if(dbName === "stockcount" && (record.ppId && record.quantity)){
+          if(typeof couchResponse.unopened ==="undefined"){
+            couchResponse.unopened ={};
+            couchResponse.unopened[record.ppId] = record.quantity;
+          }
+        }else{
+          //update couchResponse document with record properties
+          var recordProperties = Object.keys(record);
+          for (var index in recordProperties) {
+            var key = recordProperties[index];
+            couchResponse[key] = record[key];
+          }
         }
-
         //set updated couchResponse as json doc to post to server.
         requestSettings.json = couchResponse;
 
@@ -73,6 +80,15 @@ this.createOrUpdate = function(dbName, record){
 
       } else {
         if (couchResponse.error === 'not_found' && couchResponse.reason === 'missing') {
+
+          if(record.db === "stockcount") {
+            if (!record.unopened) record.unopened = {};
+            if (record.ppId && record.quantity) {
+              record[ppId] = record.quantity;
+              delete record.ppId;
+              delete record.quantity;
+            }
+          }
           //save record as a new doc.
           request(requestSettings, function (err, res, body) {
             if (!err) {

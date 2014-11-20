@@ -21,6 +21,7 @@ var isComplete = function (alert) {
     case storage.STOCK_OUT:
       return (typeof alert.productType !== 'undefined' && typeof alert.stockLevel !== 'undefined');
     case storage.CCU_BREAKDOWN:
+      /*jshint camelcase: false */
       return (typeof alert.dhis2_modelid !== 'undefined');
     default:
       throw 'unknown database type:' + alert.db;
@@ -32,7 +33,7 @@ var receiveAlert = function (alert) {
   storage.createOrUpdate(storage.OFFLINE_SMS_ALERTS, alert)
       .then(function (res) {
         if (isComplete(res)) {
-          var emailSubject = "LoMIS alert"
+          var emailSubject = "LoMIS alert";
           //send email and sms in background
           messenger.processAlert(alert, emailSubject);
 
@@ -67,6 +68,15 @@ http.createServer(function (req, res) {
         //parse POST message body to json
         var decodedMsg = querystring.parse(requestMsgBody);
         var alert = JSON.parse(decodedMsg.content);
+        if(typeof alert.db !== "undefined"){
+          if(typeof alert.db ==='stockCount'){
+            if(typeof alert.ppId === "undefined" || typeof alert.uuid === "undefined"){
+              console.log("incomplete stock count message received");
+            }else{
+              storage.createOrUpdate(alert.db, alert);
+            }
+          }
+        }
         receiveAlert(alert)
             .then(function (res) {
               console.log(res);
