@@ -1,11 +1,17 @@
 {
   "name": "dispatch",
   "version": "0.0.0",
-  "description": "LoMIS Messaging Framework",
-  "keywords": ["LoMIS"," messaging"," dipatcher"," sms"," email"],
+  "description": "LoMIS Offline SMS Sync Framework",
+  "keywords": [
+    "LoMIS",
+    "sync",
+    "dipatcher",
+    "SMS",
+    "CouchDB"
+  ],
   "author": "eHealthAfrica",
   "contributors": [],
-  "license": "N/A",
+  "license": "Apache 2",
   "homepage": "https://github.com/eHealthAfrica/dispatch",
   "repository": {
     "type": "git",
@@ -39,7 +45,8 @@
     "istanbul": "~0.2.3",
     "request": "~2.36.0",
     "nodemailer": "0.6.5",
-    "q": "~1.0.1"
+    "q": "~1.0.1",
+    "konfig": "^0.2.1"
   },
   "peerDependencies": {},
   "dependencies": {}
