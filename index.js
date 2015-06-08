@@ -1,38 +1,17 @@
 var http = require('http');
 var querystring = require('querystring');
-var request = require('request');
 var q = require("q");
+
 var storage = require("./libs/storage.js");
 var messenger = require('./libs/messenger.js');
 
-
-var isValid = function (msg) {
-  var NOT_FOUND = -1;
-  return msg.indexOf('{') !== NOT_FOUND && msg.indexOf('}') !== NOT_FOUND;
-};
-
-
-var isComplete = function (alert) {
-  if (typeof alert.db === 'undefined' || typeof alert.uuid === 'undefined' || typeof alert.facility === 'undefined' || typeof alert.created === 'undefined') {
-    return false;
-  }
-
-  switch (alert.db) {
-    case storage.STOCK_OUT:
-      return (typeof alert.productType !== 'undefined' && typeof alert.stockLevel !== 'undefined');
-    case storage.CCU_BREAKDOWN:
-      return (typeof alert.dhis2_modelid !== 'undefined');
-    default:
-      throw 'unknown database type:' + alert.db;
-  }
-};
 
 var receiveAlert = function (alert) {
   var deferred = q.defer();
   storage.createOrUpdate(storage.OFFLINE_SMS_ALERTS, alert)
       .then(function (res) {
-        if (isComplete(res)) {
-          var emailSubject = "LoMIS alert"
+        if (messenger.isComplete(res)) {
+          var emailSubject = "LoMIS alert";
           //send email and sms in background
           messenger.processAlert(alert, emailSubject);
 
@@ -63,7 +42,7 @@ http.createServer(function (req, res) {
 
     //process complete request
     req.on('end', function () {
-      if (isValid(requestMsgBody)) {
+      if (messenger.isValid(requestMsgBody)) {
         //parse POST message body to json
         var decodedMsg = querystring.parse(requestMsgBody);
         var alert = JSON.parse(decodedMsg.content);
