@@ -1,22 +1,21 @@
 var request = require('request');
 var nodeMailer = require("nodemailer");
+var config = require('konfig')();
 var q = require("q");
+var _ = require('underscore');
+
 var storage = require("./storage.js");
 var report = require("./report.js");
 
-var mailerSettings = {
-  service: "Gmail",
-  auth: {
-    user: "norepy.lomis@gmail.com",
-    pass: "LoMIS123"
-  }
-};
+
+var mailerSettings = config.app.email;
+var smsSettings = config.app.sms;
 
 var sendSms = function(recipient, msg, options){
   var deferred = q.defer();
-  var SMS_URI = "https://api.telerivet.com/v1/projects/PJf8a8a65975f7f1b6/messages/outgoing";
-  var PHONE_ID = "PN74ab386d6c2c6c85";
-  var API_KEY = "3TaBSKoPGytuLebcgAXdVll5vjUlcuwd";//TODO: DO NOT EXPOSE IN SOURCE CODE.
+  var SMS_URI = smsSettings.SMS_URI;
+  var PHONE_ID = smsSettings.PHONE_ID;
+  var API_KEY = smsSettings.API_KEY;
   var smsOpts = {
     "phone_id": PHONE_ID,
     "to_number": recipient,
@@ -91,7 +90,6 @@ var getCompleteObject = function(alert){
         .catch(function(err){
           deferred.reject(err);
         });
-      //promises.push(getRecordFromRemoteDb(CCU_PROFILE, alert.dhis2_modelid));//TODO: change dhis2_modelid to uuid in  lomis code, this will
       break;
     default:
       deferred.reject('unknown alert database.');
@@ -114,8 +112,8 @@ this.processAlert = function(alert, subject){
         var msg = report.generateMsg(completeAlertObj);
 
         //send emails in background.
-        for(var index in facilityContactInfo.emails){
-          var email = facilityContactInfo.emails[index];
+        for(var i in facilityContactInfo.emails){
+          var email = facilityContactInfo.emails[i];
           var sender = mailerSettings.auth.user;
           sendEmail(email, sender, msg, subject); //send in background
         }
@@ -134,6 +132,26 @@ this.processAlert = function(alert, subject){
       });
 
   return deferred.promise;
+};
+
+this.isValid = function(msg) {
+  var NOT_FOUND = -1;
+  return _.isString(msg) && msg.indexOf('{') !== NOT_FOUND && msg.indexOf('}') !== NOT_FOUND;
+};
+
+this.isComplete = function (alert) {
+  if (!_.isString(alert.db) || !_.isString(alert.uuid) || _.isUndefined(alert.facility) || _.isUndefined(alert.created)) {
+    return false;
+  }
+  switch (alert.db) {
+    case storage.STOCK_OUT:
+      return (!_.isUndefined(alert.productType) && !_.isUndefined(alert.stockLevel));
+    case storage.CCU_BREAKDOWN:
+      /*jshint camelcase: false */
+      return !_.isUndefined(alert.dhis2_modelid);
+    default:
+      throw 'unknown database type:' + alert.db;
+  }
 };
 
 //expose messenger as a module.
