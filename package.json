@@ -34,19 +34,20 @@
     "test": "grunt test"
   },
   "devDependencies": {
+    "chai": "~1.8.1",
     "grunt": "~0.4.2",
     "grunt-contrib-jshint": "~0.8.0",
     "grunt-mocha-test": "~0.8.1",
+    "istanbul": "~0.2.3",
+    "konfig": "^0.2.1",
     "mocha-multi": "~0.3.0",
     "mocha-slow-reporter": "0.0.0",
-    "chai": "~1.8.1",
-    "rimraf": "~2.2.5",
     "mocha-unfunk-reporter": "~0.4.0",
-    "istanbul": "~0.2.3",
-    "request": "~2.36.0",
     "nodemailer": "0.6.5",
     "q": "~1.0.1",
-    "konfig": "^0.2.1"
+    "request": "~2.36.0",
+    "rimraf": "~2.2.5",
+    "underscore": "^1.8.3"
   },
   "peerDependencies": {},
   "dependencies": {}
