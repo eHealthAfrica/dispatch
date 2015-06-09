@@ -1,9 +1,9 @@
 var q = require("q");
 var request = require('request');
 
-var config = require('konfig')();
+var config = require('../config').config;
 
-var BASE_URI =  config.app.DB_URL;
+var BASE_URI =  config.DB_URL;
 
 this.FACILITY = "facilities";
 this.PRODUCT_TYPES = "product_types";

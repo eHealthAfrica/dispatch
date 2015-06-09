@@ -1,15 +1,14 @@
 var request = require('request');
 var nodeMailer = require("nodemailer");
-var config = require('konfig')();
+var config = require('../config').config;
 var q = require("q");
 var _ = require('underscore');
 
 var storage = require("./storage.js");
 var report = require("./report.js");
 
-
-var mailerSettings = config.app.email;
-var smsSettings = config.app.sms;
+var mailerSettings = config.email;
+var smsSettings = config.sms;
 
 var sendSms = function(recipient, msg, options){
   var deferred = q.defer();
