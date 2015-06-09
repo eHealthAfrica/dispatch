@@ -1,5 +1,10 @@
 # Dispatch
 
+[![Build Status][travis-image]][travis-url]
+
+[travis-url]: https://travis-ci.org/eHealthAfrica/dispatch
+[travis-image]: https://travis-ci.org/eHealthAfrica/dispatch.svg?branch=develop
+
 > LoMIS Offline SMS Sync Framework
 
 Accepts only POST requests to forward to LoMIS database, collates SMS into documents and
