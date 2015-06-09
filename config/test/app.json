@@ -1,0 +1,15 @@
+{
+  "sms": {
+    "SMS_URI": "SMS URL",
+    "PHONE_ID": "SMS Phone Gateway",
+    "API_KEY": "SMS API KEY"
+  },
+  "email": {
+    "service": "Gmail",
+    "auth": {
+      "user": "email address",
+      "pass": "password"
+    }
+  },
+  "DB_URL": "DB URL"
+}

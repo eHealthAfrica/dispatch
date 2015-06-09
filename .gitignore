@@ -3,4 +3,6 @@
 /test-results/
 /.idea/
 *.log
-/config/
+config/*
+!config/test
+!config/index.js
