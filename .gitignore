@@ -6,3 +6,4 @@
 config/*
 !config/test
 !config/index.js
+/logs

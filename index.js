@@ -4,6 +4,10 @@ var q = require("q");
 
 var storage = require("./libs/storage.js");
 var messenger = require('./libs/messenger.js');
+var logger = require('./libs/logger.js');
+
+var PORT = 4001;
+var SERVER = '127.0.0.1';
 
 
 var receiveAlert = function (alert) {
@@ -19,7 +23,7 @@ var receiveAlert = function (alert) {
           storage.createOrUpdate(alert.db, alert);
 
         } else {
-          console.log("alert is incomplete.");
+          logger.warn("alert is incomplete.");
         }
         deferred.resolve(res);
       })
@@ -28,6 +32,8 @@ var receiveAlert = function (alert) {
       });
   return deferred.promise;
 };
+
+logger.info('Server started: '+ SERVER + ' , Port No: ' + PORT);
 
 http.createServer(function (req, res) {
 
@@ -48,10 +54,10 @@ http.createServer(function (req, res) {
         var alert = JSON.parse(decodedMsg.content);
         receiveAlert(alert)
             .then(function (res) {
-              console.log(res);
+              logger.info(res);
             })
             .catch(function (err) {
-              console.log(err);
+              logger.error(err);
             });
       }
       res.end('reply to request: sms sent to server. \n');//reply sent to client.
@@ -67,4 +73,4 @@ http.createServer(function (req, res) {
     });
   }
 
-}).listen(4001, '127.0.0.1');
+}).listen(PORT, SERVER);
