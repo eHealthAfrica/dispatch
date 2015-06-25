@@ -2,3 +2,8 @@
 /node_modules/
 /test-results/
 /.idea/
+*.log
+config/*
+!config/test
+!config/index.js
+/logs

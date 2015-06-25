@@ -1,13 +1,12 @@
 var q = require("q");
 var storage = require("./storage.js");
 
-this.generateMsg = function(alert){
+this.generateMsg = function (alert) {
   var msg = '';
   var facilityName = alert.facility.name;
   var facilityWard = alert.facility.ward;
   var contactPhoneNo = alert.facility.contact.oldphone;
 
-  console.log(alert.facility);
   switch (alert.db) {
     case storage.STOCK_OUT:
       msg = [
@@ -34,7 +33,8 @@ this.generateMsg = function(alert){
       ].join(' ');
       break;
     default:
-      msg = ['unknown alert type from ',
+      msg = [
+        'unknown alert type from ',
         facilityName
       ].join();
   }
