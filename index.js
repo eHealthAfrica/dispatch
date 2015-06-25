@@ -69,7 +69,7 @@ http.createServer(function (req, res) {
         var decodedMsg = querystring.parse(requestMsgBody);
         var alert = JSON.parse(decodedMsg.content);
         if(typeof alert.db !== "undefined"){
-          if(typeof alert.db ==='stockCount'){
+          if(alert.db ==='stockCount'){
             if(typeof alert.ppId === "undefined" || typeof alert.uuid === "undefined"){
               console.log("incomplete stock count message received");
             }else{

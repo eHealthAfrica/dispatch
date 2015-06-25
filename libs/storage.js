@@ -49,7 +49,6 @@ this.createOrUpdate = function(dbName, record){
     requestSettings.method = "POST";
     requestSettings.json = record;
     requestSettings.uri = URI;
-
     if (res) {
       var couchResponse = JSON.parse(res.body);
       if (!couchResponse.error) {
