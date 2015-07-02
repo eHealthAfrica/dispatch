@@ -14,7 +14,7 @@ module.exports = function(grunt) {
         node: true,
         esnext: true,
         bitwise: true,
-        camelcase: true,
+        camelcase: false,
         curly: true,
         eqeqeq: true,
         immed: true,
@@ -27,7 +27,7 @@ module.exports = function(grunt) {
         smarttabs: true
       },
       build: ['Gruntfile.js'],
-      lib: ['index.js', 'lib/**/*.js'],
+      lib: ['index.js', 'libs/**/*.js'],
       test: {
         options: {
           '-W030': true, // Expected an assignment or function call and instead saw an expression: ...to.be.true
@@ -75,32 +75,13 @@ module.exports = function(grunt) {
     program.name = 'mocha';
     program.exit = false;
 
-    grunt.task.run(['build', 'mochaTest', 'covreport']);
+    grunt.task.run(['build', 'mochaTest']);
     if (process.env.TRAVIS) {
       grunt.config.set('mochaTest.lib.options.reporter', 'mocha-unfunk-reporter');
       if (COVERALLS) {
         grunt.task.run(['coveralls']);
       }
     }
-  });
-
-  grunt.registerTask('covreport', 'Generate coverage reports.', function() {
-    var collector = new istanbul.Collector();
-    collector.add(global.__coverage__);
-    var reports = [
-      istanbul.Report.create('lcovonly', { dir: 'test-results' })
-    ];
-    if (process.env.TRAVIS) {
-      // show per-file coverage stats in the Travis console
-      reports.push(istanbul.Report.create('text'));
-    } else {
-      // produce HTML when not running under Travis
-      reports.push(istanbul.Report.create('html', { dir: 'test-results' }));
-    }
-    reports.push(istanbul.Report.create('text-summary'));
-    reports.forEach(function(report) {
-      report.writeReport(collector, true);
-    });
   });
 
   grunt.registerTask('coveralls', 'Push to Coveralls.', function() {

@@ -7,7 +7,6 @@ this.generateMsg = function(alert){
   var facilityWard = alert.facility.ward;
   var contactPhoneNo = alert.facility.contact.oldphone;
 
-  console.log(alert.facility);
   switch (alert.db) {
     case storage.STOCK_OUT:
       msg = [
@@ -34,7 +33,8 @@ this.generateMsg = function(alert){
       ].join(' ');
       break;
     default:
-      msg = ['unknown alert type from ',
+      msg = [
+        'unknown alert type from ',
         facilityName
       ].join();
   }
