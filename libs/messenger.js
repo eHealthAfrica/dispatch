@@ -10,7 +10,7 @@ var report = require("./report.js");
 var mailerSettings = config.email;
 var smsSettings = config.sms;
 
-var sendSms = function(recipient, msg, options){
+var sendSms = function (recipient, msg, options) {
   var deferred = q.defer();
   var SMS_URI = smsSettings.SMS_URI;
   var PHONE_ID = smsSettings.PHONE_ID;
@@ -39,7 +39,7 @@ var sendSms = function(recipient, msg, options){
   return deferred.promise;
 };
 
-var sendEmail = function(recipient, sender, msg, subject, opts){
+var sendEmail = function (recipient, sender, msg, subject, opts) {
   var deferred = q.defer();
   var settings = opts || mailerSettings;
   var smtpTransport = nodeMailer.createTransport("SMTP", settings);
@@ -59,15 +59,15 @@ var sendEmail = function(recipient, sender, msg, subject, opts){
   return deferred.promise;
 };
 
-var getCompleteObject = function(alert){
+var getCompleteObject = function (alert) {
   var deferred = q.defer();
   var promises = [];
   promises.push(storage.getRecord(storage.FACILITY, alert.facility));
-  switch(alert.db){
+  switch (alert.db) {
     case 'stock_out':
       promises.push(storage.getRecord(storage.PRODUCT_TYPES, alert.productType));
       q.all(promises)
-        .then(function(res){
+        .then(function (res) {
           var facility = res[0];
           var productType = res[1];
           //TODO: load product type uom, type objects. to form more informative msg.
@@ -75,18 +75,18 @@ var getCompleteObject = function(alert){
           alert.productType = productType;
           deferred.resolve(alert);
         })
-        .catch(function(err){
+        .catch(function (err) {
           deferred.reject(err);
         });
       break;
     case 'ccu_breakdown':
       q.all(promises)
-        .then(function(res){
+        .then(function (res) {
           var facility = res[0];
           alert.facility = facility;
           deferred.resolve(alert);
         })
-        .catch(function(err){
+        .catch(function (err) {
           deferred.reject(err);
         });
       break;
@@ -96,7 +96,7 @@ var getCompleteObject = function(alert){
   return deferred.promise;
 };
 
-this.processAlert = function(alert, subject){
+this.processAlert = function (alert, subject) {
 
   var deferred = q.defer();
   var facilityUuid = alert.facility;
@@ -105,35 +105,35 @@ this.processAlert = function(alert, subject){
   promises.push(getCompleteObject(alert));
 
   q.all(promises)
-      .then(function(res){
-        var facilityContactInfo = res[0];
-        var completeAlertObj = res[1];
-        var msg = report.generateMsg(completeAlertObj);
+    .then(function (res) {
+      var facilityContactInfo = res[0];
+      var completeAlertObj = res[1];
+      var msg = report.generateMsg(completeAlertObj);
 
-        //send emails in background.
-        for(var i in facilityContactInfo.emails){
-          var email = facilityContactInfo.emails[i];
-          var sender = mailerSettings.auth.user;
-          sendEmail(email, sender, msg, subject); //send in background
-        }
+      //send emails in background.
+      for (var i in facilityContactInfo.emails) {
+        var email = facilityContactInfo.emails[i];
+        var sender = mailerSettings.auth.user;
+        sendEmail(email, sender, msg, subject); //send in background
+      }
 
-        //send sms in background
-        var phoneNos = facilityContactInfo.phone;
-        for(var index in phoneNos){
-          var recipient = phoneNos[index];
-          sendSms(recipient, msg);
-        }
+      //send sms in background
+      var phoneNos = facilityContactInfo.phone;
+      for (var index in phoneNos) {
+        var recipient = phoneNos[index];
+        sendSms(recipient, msg);
+      }
 
-        deferred.resolve(true);//that alert has been processed.
-      })
-      .catch(function(err){
-        deferred.reject(err);
-      });
+      deferred.resolve(true);//that alert has been processed.
+    })
+    .catch(function (err) {
+      deferred.reject(err);
+    });
 
   return deferred.promise;
 };
 
-this.isValid = function(msg) {
+this.isValid = function (msg) {
   var NOT_FOUND = -1;
   return _.isString(msg) && msg.indexOf('{') !== NOT_FOUND && msg.indexOf('}') !== NOT_FOUND;
 };
