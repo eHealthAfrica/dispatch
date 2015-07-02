@@ -3,7 +3,7 @@ var request = require('request');
 
 var config = require('../config').config;
 
-var BASE_URI =  config.DB_URL;
+var BASE_URI = config.DB_URL;
 
 this.FACILITY = "facilities";
 this.PRODUCT_TYPES = "product_types";
@@ -13,7 +13,7 @@ this.CCU_BREAKDOWN = "ccu_breakdown";
 this.STOCK_COUNT = "stockcount";
 this.OFFLINE_SMS_ALERTS = "offline_sms_alerts";
 
-this.getRecord = function(dbName, uuid){
+this.getRecord = function (dbName, uuid) {
   var deferred = q.defer();
   var URI = BASE_URI + dbName + "/" + uuid;
   var opts = {
@@ -30,8 +30,8 @@ this.getRecord = function(dbName, uuid){
   return deferred.promise;
 };
 
-this.createOrUpdate = function(dbName, record){
-  var deferred  = q.defer();
+this.createOrUpdate = function (dbName, record) {
+  var deferred = q.defer();
   var URI = BASE_URI + dbName + "/";
 
   if (typeof record._id === 'undefined') {
@@ -50,16 +50,15 @@ this.createOrUpdate = function(dbName, record){
     requestSettings.method = "POST";
     requestSettings.json = record;
     requestSettings.uri = URI;
-
     if (res) {
       var couchResponse = JSON.parse(res.body);
       if (!couchResponse.error) {
-        if(dbName === "stockcount" && (record.ppId && record.quantity)){
-          if(typeof couchResponse.unopened ==="undefined"){
-            couchResponse.unopened ={};
+        if (dbName === "stockcount" && (record.ppId && record.quantity)) {
+          if (typeof couchResponse.unopened === "undefined") {
+            couchResponse.unopened = {};
             couchResponse.unopened[record.ppId] = record.quantity;
           }
-        }else{
+        } else {
           //update couchResponse document with record properties
           var recordProperties = Object.keys(record);
           for (var index in recordProperties) {
@@ -72,9 +71,9 @@ this.createOrUpdate = function(dbName, record){
 
         //POST updated copy
         request(requestSettings, function (err, res, body) {
-          if(!err){
+          if (!err) {
             deferred.resolve(couchResponse);
-          }else{
+          } else {
             deferred.reject(err);
           }
         });
@@ -82,7 +81,7 @@ this.createOrUpdate = function(dbName, record){
       } else {
         if (couchResponse.error === 'not_found' && couchResponse.reason === 'missing') {
 
-          if(record.db === "stockcount") {
+          if (record.db === "stockcount") {
             if (!record.unopened){
               record.unopened = {};
             }
@@ -102,7 +101,7 @@ this.createOrUpdate = function(dbName, record){
               deferred.reject(err);
             }
           });
-        }else{
+        } else {
           deferred.reject(couchResponse);
         }
       }
