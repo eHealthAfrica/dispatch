@@ -1,38 +1,20 @@
 var http = require('http');
 var querystring = require('querystring');
-var request = require('request');
 var q = require("q");
+
 var storage = require("./libs/storage.js");
 var messenger = require('./libs/messenger.js');
+var logger = require('./libs/logger.js');
 
+var PORT = 4001;
+var SERVER = '127.0.0.1';
 
-var isValid = function (msg) {
-  var NOT_FOUND = -1;
-  return msg.indexOf('{') !== NOT_FOUND && msg.indexOf('}') !== NOT_FOUND;
-};
-
-
-var isComplete = function (alert) {
-  if (typeof alert.db === 'undefined' || typeof alert.uuid === 'undefined' || typeof alert.facility === 'undefined' || typeof alert.created === 'undefined') {
-    return false;
-  }
-
-  switch (alert.db) {
-    case storage.STOCK_OUT:
-      return (typeof alert.productType !== 'undefined' && typeof alert.stockLevel !== 'undefined');
-    case storage.CCU_BREAKDOWN:
-      /*jshint camelcase: false */
-      return (typeof alert.dhis2_modelid !== 'undefined');
-    default:
-      throw 'unknown database type:' + alert.db;
-  }
-};
 
 var receiveAlert = function (alert) {
   var deferred = q.defer();
   storage.createOrUpdate(storage.OFFLINE_SMS_ALERTS, alert)
       .then(function (res) {
-        if (isComplete(res)) {
+        if (messenger.isComplete(res)) {
           var emailSubject = "LoMIS alert";
           //send email and sms in background
           messenger.processAlert(alert, emailSubject);
@@ -41,7 +23,7 @@ var receiveAlert = function (alert) {
           storage.createOrUpdate(alert.db, alert);
 
         } else {
-          console.log("alert is incomplete.");
+          logger.warn("alert is incomplete.");
         }
         deferred.resolve(res);
       })
@@ -50,6 +32,8 @@ var receiveAlert = function (alert) {
       });
   return deferred.promise;
 };
+
+logger.info('Server started: '+ SERVER + ' , Port No: ' + PORT);
 
 http.createServer(function (req, res) {
 
@@ -64,25 +48,16 @@ http.createServer(function (req, res) {
 
     //process complete request
     req.on('end', function () {
-      if (isValid(requestMsgBody)) {
+      if (messenger.isValid(requestMsgBody)) {
         //parse POST message body to json
         var decodedMsg = querystring.parse(requestMsgBody);
         var alert = JSON.parse(decodedMsg.content);
-        if(typeof alert.db !== "undefined"){
-          if(typeof alert.db ==='stockCount'){
-            if(typeof alert.ppId === "undefined" || typeof alert.uuid === "undefined"){
-              console.log("incomplete stock count message received");
-            }else{
-              storage.createOrUpdate(alert.db, alert);
-            }
-          }
-        }
         receiveAlert(alert)
             .then(function (res) {
-              console.log(res);
+              logger.info(res);
             })
             .catch(function (err) {
-              console.log(err);
+              logger.error(err);
             });
       }
       res.end('reply to request: sms sent to server. \n');//reply sent to client.
@@ -98,4 +73,4 @@ http.createServer(function (req, res) {
     });
   }
 
-}).listen(4001, '127.0.0.1');
+}).listen(PORT, SERVER);
