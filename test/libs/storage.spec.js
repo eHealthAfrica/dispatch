@@ -19,9 +19,9 @@ describe('storage', function () {
 		assert.isDefined(storage);
 	});
 
-	describe('getRecord', function () {
+	describe('all', function () {
 		it('Should return a promise', function (done) {
-			storage.getRecord('testDB', 'uuid')
+			storage.all('testDB', 'uuid')
 					.finally(function () {
 						done();
 					});

@@ -5,42 +5,42 @@ var	expect = chai.expect;
 var should = chai.should(); // Note that should has to be executed
 var _ = require('underscore');
 
-var messenger = require('../../libs/messenger.js');
+var docConverter = require('../../libs/doc-converter.js');
 
-describe('messenger', function() {
+describe('docConverter', function() {
 	it('Should be defined', function() {
-		assert.isDefined(messenger);
+		assert.isDefined(docConverter);
 	});
 
   describe('isValid', function(){
 		it('Should return TRUE if string contains { and } ', function(){
 			var msg = '{}';
-			var result = messenger.isValid(msg);
+			var result = docConverter.isValid(msg);
 			expect(result).to.equal(true);
 		});
 
 	  it('Should return FALSE if string does not contain { ', function(){
 		  var msg = '}';
-		  var result = messenger.isValid(msg);
+		  var result = docConverter.isValid(msg);
 		  expect(result).to.equal(false);
 	  });
 
 	  it('Should return FALSE if string does not contain } ', function(){
 			var msg = '{';
-		  var result = messenger.isValid(msg);
+		  var result = docConverter.isValid(msg);
 		  expect(result).to.equal(false);
 	  });
 
 	  it('Should return FALSE if string does not contain { and } ', function(){
 		  var msg = 'hello world';
-		  var result = messenger.isValid(msg);
+		  var result = docConverter.isValid(msg);
 		  expect(result).to.equal(false);
 	  });
 
   });
 
 	describe('isComplete', function(){
-		it('Should throw Error if alert.db is unknown', function(){
+		it('Should return False if alert.db is unknown', function(){
 			var alert = {
 				db: 'NOT_EXPECTED_DB',
 				uuid: '123456',
@@ -48,10 +48,8 @@ describe('messenger', function() {
 				created: new Date().toJSON()
 			};
 
-			var errMsg = 'unknown database type:NOT_EXPECTED_DB';
-			expect(function() {
-				messenger.isComplete(alert);
-			}).to.throw(errMsg);
+			var isComplete = docConverter.isComplete(alert);
+			expect(isComplete).to.equal(false);
 		});
 
 		it('Should return FALSE if alert.db is not a String', function(){
@@ -64,7 +62,7 @@ describe('messenger', function() {
 			};
 
 			expect(_.isString(alert.db)).to.equal(false);
-			var result = messenger.isComplete(alert);
+			var result = docConverter.isComplete(alert);
 			expect(result).to.equal(false);
 		});
 
@@ -77,7 +75,7 @@ describe('messenger', function() {
 			};
 
 			expect(_.isString(alert.uuid)).to.equal(false);
-			var result = messenger.isComplete(alert);
+			var result = docConverter.isComplete(alert);
 			expect(result).to.equal(false);
 		});
 
@@ -89,7 +87,7 @@ describe('messenger', function() {
 			};
 
 			expect(_.isUndefined(alert.facility)).to.equal(true);
-			var result = messenger.isComplete(alert);
+			var result = docConverter.isComplete(alert);
 			expect(result).to.equal(false);
 		});
 
@@ -101,7 +99,7 @@ describe('messenger', function() {
 			};
 
 			expect(_.isUndefined(alert.created)).to.equal(true);
-			var result = messenger.isComplete(alert);
+			var result = docConverter.isComplete(alert);
 			expect(result).to.equal(false);
 		});
 
@@ -115,7 +113,7 @@ describe('messenger', function() {
 				productType: 'BCG'
 			};
 
-			var result = messenger.isComplete(alert);
+			var result = docConverter.isComplete(alert);
 			expect(result).to.equal(true);
 		});
 
@@ -128,7 +126,7 @@ describe('messenger', function() {
 				productType: 'BCG'
 			};
 
-			var result = messenger.isComplete(alert);
+			var result = docConverter.isComplete(alert);
 			expect(result).to.equal(false);
 		});
 
@@ -142,7 +140,7 @@ describe('messenger', function() {
 				productType: 'BCG'
 			};
 
-			var result = messenger.isComplete(alert);
+			var result = docConverter.isComplete(alert);
 			expect(result).to.equal(false);
 		});
 

@@ -36,7 +36,7 @@ function pullSMSFrom(date) {
 								promises.push(storage.bulkUpdate(key, docs));
 							}
 
-							return q.all(promises);
+							//return q.all(promises);
 						});
 			});
 }
