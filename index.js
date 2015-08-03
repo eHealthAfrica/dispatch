@@ -1,76 +1,63 @@
-var http = require('http');
-var querystring = require('querystring');
 var q = require("q");
 
-var storage = require("./libs/storage.js");
-var messenger = require('./libs/messenger.js');
+var storage = require('./libs/storage.js');
 var logger = require('./libs/logger.js');
+var telerivet = require('./libs/telerivet.js');
+var docConveter = require('./libs/doc-converter.js');
 
-var PORT = 4001;
-var SERVER = '127.0.0.1';
+var date = process.env.START_FROM || new Date();
 
 
-var receiveAlert = function (alert) {
-  var deferred = q.defer();
-  storage.createOrUpdate(storage.OFFLINE_SMS_ALERTS, alert)
-      .then(function (res) {
-        if (messenger.isComplete(res)) {
-          var emailSubject = "LoMIS alert";
-          //send email and sms in background
-          messenger.processAlert(alert, emailSubject);
+function pullSMSFrom(date) {
+	logger.log('Collating SMS since : ' + date);
 
-          //push alert to alert db.
-          storage.createOrUpdate(alert.db, alert);
+	var params = {
+		time_created: {
+			'min': new Date(date).getTime() / 1000 //convert to UNIX timestamp
+		},
+		direction: "incoming",
+		message_type: "sms"
+	};
 
-        } else {
-          logger.warn("alert is incomplete.");
-        }
-        deferred.resolve(res);
-      })
-      .catch(function (err) {
-        deferred.reject(err);
-      });
-  return deferred.promise;
-};
+	return telerivet.query(params)
+			.then(function (collatedSMSList) {
+				var dbNames = [storage.FACILITY, storage.PRODUCT_TYPES, storage.CCEI];
+				return storage.loadDBS(dbNames)
+						.then(function (res) {
+							var facilityHash = docConveter.hashBy(res[0], '_id');
+							var productTypeHash = docConveter.hashBy(res[1], '_id');
+							var cceiHash = docConveter.hashBy(res[2], 'dhis2_modelid');
 
-logger.info('Server started: '+ SERVER + ' , Port No: ' + PORT);
+							var groupDocs = docConveter.smsToDocs(collatedSMSList, facilityHash, productTypeHash, cceiHash);
 
-http.createServer(function (req, res) {
+							var promises = [];
+							for (var key in groupDocs) {
+								var docs = groupDocs[key];
+								promises.push(storage.bulkUpdate(key, docs));
+							}
 
-  var requestMsgBody = '';
-  if (req.method === 'POST') {
-    res.writeHead(200, {'Content-Type': 'text/plain'});
+							return q.all(promises);
+						});
+			});
+}
 
-    //aggregate post body
-    req.on('data', function (data) {
-      requestMsgBody += data;
-    });
+function main(date){
+	pullSMSFrom(date)
+			.then(function(res){
+				logger.log(res);
+			})
+			.catch(function(err){
+				logger.error(err);
+			})
+			.finally(function(){
+				main(date);
+			});
+}
 
-    //process complete request
-    req.on('end', function () {
-      if (messenger.isValid(requestMsgBody)) {
-        //parse POST message body to json
-        var decodedMsg = querystring.parse(requestMsgBody);
-        var alert = JSON.parse(decodedMsg.content);
-        receiveAlert(alert)
-            .then(function (res) {
-              logger.info(res);
-            })
-            .catch(function (err) {
-              logger.error(err);
-            });
-      }
-      res.end('reply to request: sms sent to server. \n');//reply sent to client.
-    });
+main(date);
 
-  } else {
-    res.writeHead(405, {});
-    req.on('data', function (data) {
-      requestMsgBody += data;
-    });
-    req.on('end', function () {
-      res.end();
-    });
-  }
 
-}).listen(PORT, SERVER);
+
+
+
+
