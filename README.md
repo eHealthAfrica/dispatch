@@ -22,7 +22,8 @@ pushes to CouchDB server.
         "sms": {
           "SMS_URI": "OUTGOING SMS URL",
           "PHONE_ID": "TELERIVET PHONE ID",
-          "API_KEY": "TELERIVET API KEY"
+          "API_KEY": "TELERIVET API KEY",
+          "PROJECT_ID": ""
         },
         "email": {
           "service": "Gmail",
@@ -34,7 +35,7 @@ pushes to CouchDB server.
         "BASE_URI": "CouchDB Server Base URL"
       }
     ```
-5. Run `NODE_ENV=[ development | production | test ] node index.js`
+5. Run `NODE_ENV=[ development | production | test ] START_FROM=[ valid date string e.g '2015-06-02' ] node index.js`
 
 ### Unit
 
