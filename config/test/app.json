@@ -2,7 +2,8 @@
   "sms": {
     "SMS_URI": "SMS URL",
     "PHONE_ID": "SMS Phone Gateway",
-    "API_KEY": "SMS API KEY"
+    "API_KEY": "SMS API KEY",
+    "PROJECT_ID": ""
   },
   "email": {
     "service": "Gmail",
