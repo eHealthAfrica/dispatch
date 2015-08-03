@@ -5,6 +5,7 @@ var telerivet = require('telerivet');
 
 var config = require('../config').config;
 var docConverter = require("./doc-converter.js");
+var storage = require("./storage.js");
 
 var teleWrapper = {};
 
@@ -13,17 +14,6 @@ var defaultConfig = {
 	projectID: config.sms.PROJECT_ID
 };
 
-function parseSMSJSON(collateSMS) {
-	var result = [];
-	var doc;
-	for (var id in collateSMS) {
-		if (collateSMS.hasOwnProperty(id)) {
-			doc = collateSMS[id];
-			result.push(doc);
-		}
-	}
-	return result;
-}
 
 teleWrapper.query = function (params, cfg) {
 	var dfd = q.defer();
@@ -44,26 +34,11 @@ teleWrapper.query = function (params, cfg) {
 			if (err) {
 				dfd.reject(err);
 			}
+			collateSMS = docConverter.parseSMSContent(collateSMS, message);
 
-			if (message && message.content) {
-				var content = message.content;
-				if (content && docConverter.isValid(content)) {
-					var msgJson = JSON.parse(content);
-					if (msgJson && (msgJson.uuid || msgJson._id) && msgJson.db) {
-						var smsId = (msgJson.uuid || msgJson._id);
-						//init new sms
-						if (!collateSMS[smsId]) {
-							collateSMS[smsId] = {db: msgJson.db};
-						}
-						for (var k in msgJson) {
-							collateSMS[smsId][k] = msgJson[k];
-						}
-					}
-				}
-			}
 			counter += 1;
 			if (counter === count) {
-				var result = parseSMSJSON(collateSMS);
+				var result = docConverter.parseSMSJSON(collateSMS);
 				dfd.resolve(result);
 			}
 		});
