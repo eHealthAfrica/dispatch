@@ -84,5 +84,37 @@ docConverter.hashBy = function (docs, key) {
 	return hashMap;
 };
 
+docConverter.parseSMSJSON = function (collateSMS) {
+	var result = [];
+	var doc;
+	for (var id in collateSMS) {
+		if (collateSMS.hasOwnProperty(id)) {
+			doc = collateSMS[id];
+			result.push(doc);
+		}
+	}
+	return result;
+};
+
+docConverter.parseSMSContent = function(collateSMS, message) {
+	if (message && message.content) {
+		var content = message.content;
+		if (content && docConverter.isValid(content)) {
+			var msgJson = JSON.parse(content);
+			if (msgJson && (msgJson.uuid || msgJson._id) && msgJson.db === storage.STOCK_COUNT) { //TODO: REMOVE stock count db filter
+				var smsId = (msgJson.uuid || msgJson._id);
+				//init new sms
+				if (!collateSMS[smsId]) {
+					collateSMS[smsId] = { db: msgJson.db };
+				}
+				for (var k in msgJson) {
+					collateSMS[smsId][k] = msgJson[k];
+				}
+			}
+		}
+	}
+	return collateSMS;
+};
+
 //expose messenger as a module.
 module.exports = docConverter;
