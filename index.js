@@ -8,8 +8,17 @@ var docConveter = require('./libs/doc-converter.js');
 var date = process.env.START_FROM || new Date();
 
 
+function writeToCouchDBS (groupDocs){
+	var promises = [];
+	for (var key in groupDocs) {
+		var docs = groupDocs[key];
+		promises.push(storage.bulkUpdate(key, docs));
+	}
+	return q.all(promises);
+}
+
 function pullSMSFrom(date) {
-	logger.log('Collating SMS since : ' + date);
+	logger.info('Collating SMS since : ' + date);
 
 	var params = {
 		time_created: {
@@ -30,13 +39,7 @@ function pullSMSFrom(date) {
 
 							var groupDocs = docConveter.smsToDocs(collatedSMSList, facilityHash, productTypeHash, cceiHash);
 
-							var promises = [];
-							for (var key in groupDocs) {
-								var docs = groupDocs[key];
-								promises.push(storage.bulkUpdate(key, docs));
-							}
-
-							return q.all(promises);
+							return writeToCouchDBS(groupDocs);
 						});
 			});
 }
@@ -44,7 +47,7 @@ function pullSMSFrom(date) {
 function main(date){
 	pullSMSFrom(date)
 			.then(function(res){
-				logger.log(res);
+				logger.info(res);
 			})
 			.catch(function(err){
 				logger.error(err);
