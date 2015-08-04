@@ -5,12 +5,12 @@ var storage = require("./storage.js");
 
 var docConverter = {};
 
-function addTo(list, doc) {
+docConverter.addTo = function (list, doc) {
 	if (doc) {
 		list.push(doc);
 	}
 	return list;
-}
+};
 
 docConverter.toStockOut = function (smsDoc, facility, productType) {
 	smsDoc._id = smsDoc.uuid;
@@ -47,7 +47,7 @@ docConverter.smsToDocs = function (smsDocs, facilityHash, productTypeHash, cceiH
 			}else if(smsDoc.db === storage.STOCK_COUNT){
 				doc = smsDoc;
 			}
-			groupDocs[smsDoc.db] = addTo(groupDocs[smsDoc.db], doc);
+			groupDocs[smsDoc.db] = docConverter.addTo(groupDocs[smsDoc.db], doc);
 		}
 	}
 	return groupDocs;
