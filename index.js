@@ -8,7 +8,7 @@ var docConveter = require('./libs/doc-converter.js');
 var date = process.env.START_FROM || new Date();
 
 
-function writeToCouchDBS (groupDocs){
+function writeToCouchDBS(groupDocs) {
 	var promises = [];
 	for (var key in groupDocs) {
 		var docs = groupDocs[key];
@@ -30,7 +30,7 @@ function pullSMSFrom(date) {
 
 	return telerivet.query(params)
 			.then(function (collatedSMSList) {
-				var dbNames = [storage.FACILITY, storage.PRODUCT_TYPES, storage.CCEI];
+				var dbNames = [ storage.FACILITY, storage.PRODUCT_TYPES, storage.CCEI ];
 				return storage.loadDBS(dbNames)
 						.then(function (res) {
 							var facilityHash = docConveter.hashBy(res[0], '_id');
@@ -44,15 +44,15 @@ function pullSMSFrom(date) {
 			});
 }
 
-function main(date){
+function main(date) {
 	pullSMSFrom(date)
-			.then(function(res){
+			.then(function (res) {
 				logger.info(res);
 			})
-			.catch(function(err){
+			.catch(function (err) {
 				logger.error(err);
 			})
-			.finally(function(){
+			.finally(function () {
 				main(date);
 			});
 }
