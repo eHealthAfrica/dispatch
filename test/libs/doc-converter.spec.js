@@ -40,71 +40,71 @@ describe('docConverter', function() {
   });
 
 	describe('isComplete', function(){
-		it('Should return False if alert.db is unknown', function(){
-			var alert = {
+		it('Should return False if doc.db is unknown', function(){
+			var doc = {
 				db: 'NOT_EXPECTED_DB',
 				uuid: '123456',
 				facility: 'Test Facility',
 				created: new Date().toJSON()
 			};
 
-			var isComplete = docConverter.isComplete(alert);
+			var isComplete = docConverter.isComplete(doc);
 			expect(isComplete).to.equal(false);
 		});
 
-		it('Should return FALSE if alert.db is not a String', function(){
+		it('Should return FALSE if doc.db is not a String', function(){
 
-			var alert = {
+			var doc = {
 				db: null,
 				uuid: '123456',
 				facility: 'Test Facility',
 				created: new Date().toJSON()
 			};
 
-			expect(_.isString(alert.db)).to.equal(false);
-			var result = docConverter.isComplete(alert);
+			expect(_.isString(doc.db)).to.equal(false);
+			var result = docConverter.isComplete(doc);
 			expect(result).to.equal(false);
 		});
 
-		it('Should return FALSE if alert.uuid id not a String', function(){
-			var alert = {
+		it('Should return FALSE if doc.uuid id not a String', function(){
+			var doc = {
 				db: 'ccu_breakdown',
 				uuid: null,
 				facility: 'Test Facility',
 				created: new Date().toJSON()
 			};
 
-			expect(_.isString(alert.uuid)).to.equal(false);
-			var result = docConverter.isComplete(alert);
+			expect(_.isString(doc.uuid)).to.equal(false);
+			var result = docConverter.isComplete(doc);
 			expect(result).to.equal(false);
 		});
 
-		it('Should return FALSE if alert.facility is UNDEFINED', function(){
-			var alert = {
+		it('Should return FALSE if doc.facility is UNDEFINED', function(){
+			var doc = {
 				db: null,
 				uuid: '123456',
 				created: new Date().toJSON()
 			};
 
-			expect(_.isUndefined(alert.facility)).to.equal(true);
-			var result = docConverter.isComplete(alert);
+			expect(_.isUndefined(doc.facility)).to.equal(true);
+			var result = docConverter.isComplete(doc);
 			expect(result).to.equal(false);
 		});
 
-		it('Should return FALSE if alert.created is UNDEFINED', function(){
-			var alert = {
+		it('Should return FALSE if doc.created is UNDEFINED', function(){
+			var doc = {
 				db: null,
 				uuid: '123456',
 				facility: 'Test Facility'
 			};
 
-			expect(_.isUndefined(alert.created)).to.equal(true);
-			var result = docConverter.isComplete(alert);
+			expect(_.isUndefined(doc.created)).to.equal(true);
+			var result = docConverter.isComplete(doc);
 			expect(result).to.equal(false);
 		});
 
-		it('Should return TRUE if alert.db is stock_out and alert.stockLevel and alert.productType are defined', function(){
-			var alert = {
+		it('Should return TRUE if doc.db is stock_out and doc.stockLevel and doc.productType are defined', function(){
+			var doc = {
 				db: 'stock_out',
 				uuid: '1234567890-1926177',
 				facility: 'Test Facility',
@@ -113,12 +113,12 @@ describe('docConverter', function() {
 				productType: 'BCG'
 			};
 
-			var result = docConverter.isComplete(alert);
+			var result = docConverter.isComplete(doc);
 			expect(result).to.equal(true);
 		});
 
-		it('Should return FALSE if alert.db is stock_out, alert.stockLevel is not defined', function(){
-			var alert = {
+		it('Should return FALSE if doc.db is stock_out, doc.stockLevel is not defined', function(){
+			var doc = {
 				db: 'stock_out',
 				uuid: '1234567890-1926177',
 				facility: 'Test Facility',
@@ -126,13 +126,13 @@ describe('docConverter', function() {
 				productType: 'BCG'
 			};
 
-			var result = docConverter.isComplete(alert);
+			var result = docConverter.isComplete(doc);
 			expect(result).to.equal(false);
 		});
 
 
-		it('Should return FALSE if alert.db is stock_out, alert.productType is not defined', function(){
-			var alert = {
+		it('Should return FALSE if doc.db is stock_out, doc.productType is not defined', function(){
+			var doc = {
 				db: 'stock_out',
 				uuid: '1234567890-1926177',
 				facility: 'Test Facility',
@@ -140,7 +140,7 @@ describe('docConverter', function() {
 				productType: 'BCG'
 			};
 
-			var result = docConverter.isComplete(alert);
+			var result = docConverter.isComplete(doc);
 			expect(result).to.equal(false);
 		});
 
