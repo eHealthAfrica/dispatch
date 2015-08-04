@@ -69,7 +69,10 @@ docConverter.isComplete = function (doc) {
 			/*jshint camelcase: false */
 			return !_.isUndefined(doc.dhis2_modelid);
 		case storage.STOCK_COUNT:
-			return _.isObject(doc.unopened) && Object.keys(doc.unopened).length > 0;
+				//TODO: this should also check if ppLen if defined and equals Object.keys(doc.unopened).length
+				//SEE issue #167
+			var hasUnopened = (_.isObject(doc.unopened) && Object.keys(doc.unopened).length > 0);
+			return hasUnopened && !_.isUndefined(doc.countDate);
 		default:
 			return false;
 	}
