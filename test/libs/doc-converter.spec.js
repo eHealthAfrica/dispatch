@@ -239,6 +239,42 @@ describe('docConverter', function() {
 			assert.isDefined(result._id);
 		});
 
+		it('Should set facility uuid with passed in facility object', function() {
+			var doc = {
+				db: 'stock_out',
+				uuid: '1234567890-1926177',
+				facility: 'Test Facility',
+				created: new Date().toJSON(),
+				productType: 'BCG'
+			};
+			var facility = { name: 'Test HP', _id: '123-KKL' };
+			var productType = { name: 'BCG', _id: '321-kLS-a32' };
+			var isStringBefore = _.isString(doc.facility);
+			expect(isStringBefore).to.equal(true);
+			var result = docConverter.toStockOut(doc, facility, productType);
+			var isObjectAfter = _.isObject(result.facility);
+			expect(isObjectAfter).to.equal(true);
+			expect(result.facility).to.equal(facility);
+		});
+
+		it('Should set product type uuid with passed in product type object', function() {
+			var doc = {
+				db: 'stock_out',
+				uuid: '1234567890-1926177',
+				facility: 'Test Facility',
+				created: new Date().toJSON(),
+				productType: 'BCG'
+			};
+			var facility = { name: 'Test HP', _id: '123-KKL' };
+			var productType = { name: 'BCG', _id: '321-kLS-a32' };
+			var isStringBefore = _.isString(doc.productType);
+			expect(isStringBefore).to.equal(true);
+			var result = docConverter.toStockOut(doc, facility, productType);
+			var isObjectAfter = _.isObject(result.productType);
+			expect(isObjectAfter).to.equal(true);
+			expect(result.productType).to.equal(productType);
+		});
+
 	});
 
 });
