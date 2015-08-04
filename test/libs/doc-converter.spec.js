@@ -184,6 +184,53 @@ describe('docConverter', function() {
 			expect(result).to.equal(true);
 		});
 
+		it('Should return FALSE if stockCount.countDate is UNDEFINED', function() {
+			var doc = {
+				db: 'stockcount',
+				uuid: '37a0e46e-efe8-44bc-f525-af373d4b3122',
+				_id: '37a0e46e-efe8-44bc-f525-af373d4b3122',
+				isComplete: 1,
+				facility: 'FACILITY_ID',
+				unopened: {
+					'V1': 200,
+					'V2': 0,
+					'V3': 200,
+					'V4': 100,
+					'V5': 200,
+					'v6': 100
+				},
+				created: '2015-08-03T13:01:49.276Z',
+				modified: '2015-08-03T13:01:49.276Z'
+			};
+
+			var result = docConverter.isComplete(doc);
+			expect(result).to.equal(false);
+		});
+
+		it('Should return TRUE if stockCount.countDate is DEFINED', function() {
+			var doc = {
+				db: 'stockcount',
+				uuid: '37a0e46e-efe8-44bc-f525-af373d4b3122',
+				_id: '37a0e46e-efe8-44bc-f525-af373d4b3122',
+				isComplete: 1,
+				countDate: '2015-07-29T23:00:00.000Z',
+				facility: 'FACILITY_ID',
+				unopened: {
+					'V1': 200,
+					'V2': 0,
+					'V3': 200,
+					'V4': 100,
+					'V5': 200,
+					'v6': 100
+				},
+				created: '2015-08-03T13:01:49.276Z',
+				modified: '2015-08-03T13:01:49.276Z'
+			};
+
+			var result = docConverter.isComplete(doc);
+			expect(result).to.equal(true);
+		});
+
 	});
 
 	describe('hashBy', function() {
