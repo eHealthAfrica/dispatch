@@ -5,15 +5,10 @@ chai.use(spies);
 var assert = chai.assert;
 var expect = chai.expect;
 
-var config = require('../../config').config;
 var storage = require('../../libs/storage.js');
-var request;
 
 describe('storage', function () {
 
-	beforeEach(function () {
-		request = chai.spy(require('request'));
-	});
 
 	it('Should be defined', function () {
 		assert.isDefined(storage);
