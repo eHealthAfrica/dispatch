@@ -44,6 +44,8 @@ docConverter.smsToDocs = function (smsDocs, facilityHash, productTypeHash, cceiH
 			} else if (smsDoc.db === storage.CCU_BREAKDOWN) {
 				var ccuProfile = cceiHash[smsDoc.dhis2_modelid];
 				doc = docConverter.toCCUBreakdown(smsDoc, facility, ccuProfile);
+			}else if(smsDoc.db === storage.STOCK_COUNT){
+				doc = smsDoc;
 			}
 			groupDocs[smsDoc.db] = addTo(groupDocs[smsDoc.db], doc);
 		}
@@ -66,6 +68,8 @@ docConverter.isComplete = function (doc) {
 		case storage.CCU_BREAKDOWN:
 			/*jshint camelcase: false */
 			return !_.isUndefined(doc.dhis2_modelid);
+		case storage.STOCK_COUNT:
+			return _.isObject(doc.unopened) && Object.keys(doc.unopened).length > 0;
 		default:
 			return false;
 	}
@@ -96,19 +100,55 @@ docConverter.parseSMSJSON = function (collateSMS) {
 	return result;
 };
 
+function collateStockCount(smsId, msgJSON, collatedSMS){
+	var stockCount = collatedSMS[smsId];
+  if(stockCount && stockCount.db === storage.STOCK_COUNT){
+	  stockCount.uuid = smsId;
+	  stockCount._id = stockCount.uuid;
+	  stockCount.isComplete = 1;
+
+	  if(msgJSON.hasOwnProperty('ppId')){
+		  var unopened = stockCount.unopened || {};
+		  unopened[msgJSON.ppId] = msgJSON.qty;
+		  stockCount.unopened = unopened;
+	  }
+	  if(msgJSON.hasOwnProperty('cd')){
+		  stockCount.countDate = msgJSON.cd;
+	  }
+	  if(msgJSON.hasOwnProperty('created')){
+		  stockCount.created = msgJSON.created;
+		  stockCount.modified = msgJSON.created;//assume to be same could be wrong.
+	  }
+	  if(msgJSON.hasOwnProperty('facility')){
+		  stockCount.facility = msgJSON.facility;
+	  }
+	  if(msgJSON.hasOwnProperty('ppLen')){
+		  stockCount.ppLength = msgJSON.ppLen;
+	  }
+	  collatedSMS[smsId] = stockCount;
+  }
+	return collatedSMS;
+}
+
 docConverter.parseSMSContent = function(collateSMS, message) {
 	if (message && message.content) {
 		var content = message.content;
 		if (content && docConverter.isValid(content)) {
 			var msgJson = JSON.parse(content);
-			if (msgJson && (msgJson.uuid || msgJson._id) && msgJson.db === storage.STOCK_COUNT) { //TODO: REMOVE stock count db filter
+			if (msgJson && (msgJson.uuid || msgJson._id) && msgJson.db) {
 				var smsId = (msgJson.uuid || msgJson._id);
 				//init new sms
 				if (!collateSMS[smsId]) {
 					collateSMS[smsId] = { db: msgJson.db };
 				}
-				for (var k in msgJson) {
-					collateSMS[smsId][k] = msgJson[k];
+
+				if(msgJson.db === storage.STOCK_COUNT){
+					collateSMS = collateStockCount(smsId, msgJson, collateSMS);
+				}else{
+					//collate others stock out, cce breakdown etc
+					for (var k in msgJson) {
+						collateSMS[smsId][k] = msgJson[k];
+					}
 				}
 			}
 		}
