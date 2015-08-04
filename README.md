@@ -7,8 +7,8 @@
 
 > LoMIS Offline SMS Sync Framework
 
-Accepts only POST requests to forward to LoMIS database, collates SMS into documents and
-pushes to CouchDB server.
+This is a NodeJS service that pull a given Telerivet Project at Interval and Sync documents
+to COuchDB.
 
 ## Usage
 
