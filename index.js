@@ -1,12 +1,19 @@
+'use strict';
+
 var q = require("q");
+var moment = require('moment');
 
 var storage = require('./libs/storage.js');
 var logger = require('./libs/logger.js');
 var telerivet = require('./libs/telerivet.js');
 var docConveter = require('./libs/doc-converter.js');
 
-var date = process.env.START_FROM || new Date();
+var startFromDate = process.env.START_FROM || new Date();
 
+
+function getNextStartDate(date){
+	return moment(new Date(date).getTime()).subtract(1, 'day').toDate();
+}
 
 function writeToCouchDBS(groupDocs) {
 	var promises = [];
@@ -48,16 +55,18 @@ function main(date) {
 	pullSMSFrom(date)
 			.then(function (res) {
 				logger.info(res);
+				var now = new Date();
+				startFromDate = getNextStartDate(now);
 			})
 			.catch(function (err) {
 				logger.error(err);
 			})
 			.finally(function () {
-				main(date);
+				main(startFromDate);
 			});
 }
 
-main(date);
+main(startFromDate);
 
 
 
