@@ -5,7 +5,7 @@
 [travis-url]: https://travis-ci.org/eHealthAfrica/dispatch
 [travis-image]: https://travis-ci.org/eHealthAfrica/dispatch.svg?branch=develop
 
-> LoMIS Offline SMS Sync Framework
+> LoMIS Offline SMS Sync Service
 
 This is a NodeJS service that pull a given Telerivet Project at Interval and Sync documents
 to CouchDB.
