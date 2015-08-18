@@ -67,7 +67,10 @@ function main(date) {
 				logger.error(err);
 			})
 			.finally(function () {
-				main(startFromDate);
+				var FIVE_MINS = 300000; //
+				setInterval(function(){
+					main(startFromDate);
+				}, FIVE_MINS);
 			});
 }
 
