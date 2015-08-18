@@ -11,7 +11,7 @@ var docConveter = require('./libs/doc-converter.js');
 var startFromDate = process.env.START_FROM || new Date();
 
 
-function getNextStartDate(date){
+function getNextStartDate(date) {
 	return moment(new Date(date).getTime()).subtract(1, 'day').toDate();
 }
 
@@ -27,9 +27,11 @@ function writeToCouchDBS(groupDocs) {
 function pullSMSFrom(date) {
 	logger.info('Collating SMS since : ' + date);
 
+	var since = (new Date(date).getTime() / 1000); //convert to UNIX timestamp
+
 	var params = {
 		time_created: {
-			'min': new Date(date).getTime() / 1000 //convert to UNIX timestamp
+			'min': since
 		},
 		direction: "incoming",
 		message_type: "sms"
@@ -37,7 +39,10 @@ function pullSMSFrom(date) {
 
 	return telerivet.query(params)
 			.then(function (collatedSMSList) {
-				var dbNames = [ storage.FACILITY, storage.PRODUCT_TYPES, storage.CCEI ];
+				if (collatedSMSList && collatedSMSList.length === 0) {
+					return q.reject('Message list is empty');
+				}
+				var dbNames = [storage.FACILITY, storage.PRODUCT_TYPES, storage.CCEI];
 				return storage.loadDBS(dbNames)
 						.then(function (res) {
 							var facilityHash = docConveter.hashBy(res[0], '_id');
