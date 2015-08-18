@@ -25,10 +25,13 @@ teleWrapper.query = function (params, cfg) {
 
 	var counter = 0;
 	var collateSMS = {};
-
+  var result = [];
 	cursor.count(function (err, count) {
 		if (err) {
 			dfd.reject(err);
+		}
+		if(count === 0){
+			dfd.resolve(result);
 		}
 		cursor.each(function (err, message) {
 			if (err) {
@@ -38,7 +41,7 @@ teleWrapper.query = function (params, cfg) {
 
 			counter += 1;
 			if (counter === count) {
-				var result = docConverter.parseSMSJSON(collateSMS);
+				result = docConverter.parseSMSJSON(collateSMS);
 				dfd.resolve(result);
 			}
 		});
