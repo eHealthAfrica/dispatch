@@ -76,29 +76,25 @@ function main(date, delay) {
 					counter++;
 					isProcessing = false;
 					logger.info('Memory consumption : ', process.memoryUsage());
-					var file = '/tmp/myapp-' + process.pid + '-' + Date.now() + '.heapsnapshot';
-					heapdump.writeSnapshot(file, function (err) {
-						if (err) {
-							logger.error(err);
-						} else {
-							logger.error('Wrote snapshot: ' + file);
-						}
-					});
+					memDump();
 				});
 	}, delay);
 }
 
-
-memwatch.on('leak', function (info) {
-	logger.error(info);
+function memDump() {
 	var file = '/tmp/dispatch-' + process.pid + '-' + Date.now() + '.heapsnapshot';
 	heapdump.writeSnapshot(file, function (err) {
 		if (err) {
 			logger.error(err);
 		} else {
-			logger.error('Wrote snapshot: ' + file);
+			logger.info('Wrote snapshot: ' + file);
 		}
 	});
+}
+
+memwatch.on('leak', function (info) {
+	logger.error(info);
+	memDump();
 });
 
 var FIVE_MINS = 300000;
