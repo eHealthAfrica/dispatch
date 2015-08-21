@@ -53,5 +53,8 @@
     "moment": "^2.10.6"
   },
   "peerDependencies": {},
-  "dependencies": {}
+  "dependencies": {
+    "heapdump": "^0.3.7",
+    "memwatch": "^0.2.2"
+  }
 }
