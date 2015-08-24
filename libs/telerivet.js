@@ -25,12 +25,12 @@ teleWrapper.query = function (params, cfg) {
 
 	var counter = 0;
 	var collateSMS = {};
-  var result = [];
+	var result = [];
 	cursor.count(function (err, count) {
 		if (err) {
 			dfd.reject(err);
 		}
-		if(count === 0){
+		if (count === 0) {
 			dfd.resolve(result);
 		}
 		cursor.each(function (err, message) {
@@ -47,6 +47,36 @@ teleWrapper.query = function (params, cfg) {
 		});
 	});
 	return dfd.promise;
+};
+
+teleWrapper.pullSMSFrom = function (date) {
+	var since = (new Date(date).getTime() / 1000); //convert to UNIX timestamp
+
+	var params = {
+		time_created: {
+			'min': since
+		},
+		direction: "incoming",
+		message_type: "sms"
+	};
+
+	return teleWrapper.query(params)
+			.then(function (collatedSMSList) {
+				if (collatedSMSList && collatedSMSList.length === 0) {
+					return q.reject('Message list is empty');
+				}
+				var dbNames = [storage.FACILITY, storage.PRODUCT_TYPES, storage.CCEI];
+				return storage.loadDBS(dbNames)
+						.then(function (res) {
+							var facilityHash = docConverter.hashBy(res[0], '_id');
+							var productTypeHash = docConverter.hashBy(res[1], '_id');
+							var cceiHash = docConverter.hashBy(res[2], 'dhis2_modelid');
+
+							var groupDocs = docConverter.smsToDocs(collatedSMSList, facilityHash, productTypeHash, cceiHash);
+
+							return storage.writeToCouchDBS(groupDocs);
+						});
+			});
 };
 
 module.exports = teleWrapper;

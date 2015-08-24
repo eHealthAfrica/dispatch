@@ -45,6 +45,17 @@ storage.bulkUpdate = function(dbName, docs, opts){
   return db.bulkDocs(docs, params);
 };
 
+storage.writeToCouchDBS = function(groupDocs) {
+  var promises = [];
+  for (var key in groupDocs) {
+    var docs = groupDocs[key];
+    if(groupDocs.hasOwnProperty(key)){
+      promises.push(storage.bulkUpdate(key, docs));
+    }
+  }
+  return q.all(promises);
+};
+
 
 //expose storage as a module.
 module.exports = storage;
