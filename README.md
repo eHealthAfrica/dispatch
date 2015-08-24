@@ -35,7 +35,7 @@ to CouchDB.
         "BASE_URI": "CouchDB Server Base URL"
       }
     ```
-5. Run `NODE_ENV=[ development | production | test ] START_FROM=[ valid date string e.g '2015-06-02' ] node index.js`
+5. Run `NODE_ENV=[ development | production | test ] START_FROM=[ valid date string e.g '2015-06-02' ] node --expose-gc index.js`
 
 ### Unit
 
